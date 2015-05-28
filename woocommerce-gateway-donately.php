@@ -10,55 +10,75 @@ Author URI: http://mnzn.co
 if ( ! defined( 'ABSPATH' ) ) { 
     exit; // Exit if accessed directly
 }
+
+/**
+ * Internationalization
+ *
+ * @access      public
+ * @since       1.6.6
+ * @return      void
+ */
+function mnzn_donately_textdomain() {
+    load_plugin_textdomain( 'mnzn_donately', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+}
+add_action( 'init', 'mnzn_donately_textdomain' );
  
-// Include our Gateway Class and register Payment Gateway with WooCommerce
-add_action( 'plugins_loaded', 'mnzn_donately_init', 0 );
+/**
+ * Initialize everything
+ */
 function mnzn_donately_init() {
-    // If the parent WC_Payment_Gateway class doesn't exist
-    // it means WooCommerce is not installed on the site
-    // so do nothing
+    
     if ( ! class_exists( 'WC_Payment_Gateway' ) ) return;
      
-    // If we made it this far, then include our Gateway Class
+    //include the donately class
     include_once( 'includes/woocommerce-donately.php' );
  
-    // Now that we have successfully included our class,
-    // Lets add it too WooCommerce
-    add_filter( 'woocommerce_payment_gateways', 'mnzn_donately_gateway' );
+    
+    /**
+     * Add the gateway to the $methods array
+     * 
+     * @param  [array] $methods
+     * @return [array]          
+     */
     function mnzn_donately_gateway( $methods ) {
         $methods[] = 'MNZN_Donately';
         return $methods;
     }
+    add_filter( 'woocommerce_payment_gateways', 'mnzn_donately_gateway' );
 }
+add_action( 'plugins_loaded', 'mnzn_donately_init', 0 );
  
-// Add custom action links
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mnzn_donately_action_links' );
+/**
+ * Add custom settings pages links
+ * 
+ * @param  [array] $links
+ * @return [array]        
+ */
 function mnzn_donately_action_links( $links ) {
     $plugin_links = array(
-        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">' . __( 'Settings', 'spyr-authorizenet-aim' ) . '</a>',
-    );
- 
+        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">' . __( 'Settings', 'mnzn_donately' ) . '</a>',
+    ); 
     // Merge our new link with the default ones
     return array_merge( $plugin_links, $links );    
 }
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mnzn_donately_action_links' );
 
 
 
 /**
- * Add the field to the checkout
+ * Conditionally show Donately fields based on the
+ * gateway settings in the admin area.
+ * 
+ * @param  [type] $checkout [description]
+ * @return [type]           [description]
  */
-add_action( 'woocommerce_after_order_notes', 'mnzn_donately_checkout_fields' );
- 
 function mnzn_donately_checkout_fields( $checkout ) {
     
     $dntly_settings = get_option( 'woocommerce_mnzn_donately_settings' );
 
     $anonymous = $dntly_settings['anonymous'];
     $onbehalf = $dntly_settings['onbehalf'];
-    // echo '<pre>';
-    // print_r( $dntly_settings );
-    // echo '</pre>';
-    
+
     if( $anonymous == 'yes' || $onbehalf == 'yes') {
         echo '<div id="dntly_anonymous"><h2>' . __('Donation Details') . '</h2>';
         
@@ -84,6 +104,6 @@ function mnzn_donately_checkout_fields( $checkout ) {
         echo '</div>';    
     }
     
- 
 }
+add_action( 'woocommerce_after_order_notes', 'mnzn_donately_checkout_fields' );
 
