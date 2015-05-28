@@ -210,13 +210,23 @@ class MNZN_Donately extends WC_Payment_Gateway {
 
         $response_body = json_decode( $response_body );
 
+        $donation_url = '<a href="https://'.$subdomain.'.dntly.com/admin/app#/donations/edit/' . $response_body->donation->id .'" target="_blank">'. $response_body->donation->id . '</a>';
+
 
         // Test the code to know if the transaction went through or not.
         // 1 or 4 means the transaction was a success
         if ( ( $response_body->success ) ) {
             // Payment has been successful
             $customer_order->add_order_note( __( 'Donately payment completed.', 'mnzn-donately' ) );
-                                                  
+            $customer_order->add_order_note(  __( 'Donately Donation ID: '. $donation_url , 'mnzn-donately' ) );
+
+            if( $anonymous == 'true'){
+                $customer_order->add_order_note(  __( 'Donated anonymously' , 'mnzn-donately' ) );                
+            }
+
+            if( $onbehalf ){
+                $customer_order->add_order_note(  __( 'Donated on behalf of: '. $onbehalf , 'mnzn-donately' ) );
+            }
             // Mark order as Paid
             $customer_order->payment_complete();
  

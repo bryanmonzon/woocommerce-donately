@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return      void
  */
 function mnzn_donately_textdomain() {
-    load_plugin_textdomain( 'mnzn_donately', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    load_plugin_textdomain( 'mnzn-donately', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 }
 add_action( 'init', 'mnzn_donately_textdomain' );
  
@@ -56,7 +56,7 @@ add_action( 'plugins_loaded', 'mnzn_donately_init', 0 );
  */
 function mnzn_donately_action_links( $links ) {
     $plugin_links = array(
-        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">' . __( 'Settings', 'mnzn_donately' ) . '</a>',
+        '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">' . __( 'Settings', 'mnzn-donately' ) . '</a>',
     ); 
     // Merge our new link with the default ones
     return array_merge( $plugin_links, $links );    
