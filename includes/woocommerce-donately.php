@@ -210,7 +210,7 @@ class MNZN_Donately extends WC_Payment_Gateway {
 
         $response_body = json_decode( $response_body );
 
-        $donation_url = '<a href="https://'.$subdomain.'.dntly.com/admin/app#/donations/edit/' . $response_body->donation->id .'" target="_blank">'. $response_body->donation->id . '</a>';
+        $donation_url = '<a href="https://'.$subdomain.'.dntly.com/admin/app#/donations/edit/' . $response_body->donation->id .'" target="_blank" title="View this donation on Donately">'. $response_body->donation->id . '</a>';
 
 
         // Test the code to know if the transaction went through or not.
